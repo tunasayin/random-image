@@ -7,7 +7,7 @@ Install Node.JS from [here](https://nodejs.org/en/).<br>
 Clone this repository.
 
 ```
-git clone https://github.com/tunasayin/word-scrapper.git
+git clone https://github.com/tunasayin/random-image.git
 ```
 
 Cd to the random-image's directory
