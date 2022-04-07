@@ -1,7 +1,9 @@
-﻿using System.Net.Http;
+﻿using System.Diagnostics;
+using System.Net.Http;
 using HtmlAgilityPack;
+using Vlingo.UUID;
 
-class Program
+class RandomImage
 {
     static string[] CHAR_LIST = {   
         "a",
@@ -71,6 +73,7 @@ class Program
         "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0"
     };
 
+    static string ARCHIVE_PATH = $"{Directory.GetCurrentDirectory()}/archive";
 
     static string GenerateRandomImageId()
     {
@@ -110,7 +113,7 @@ class Program
 
             doc.LoadHtml(siteData);
 
-            var imageUrl = doc.GetElementbyId("screenshot-image").GetAttributeValue("src", "not_found");
+            dynamic imageUrl = doc.GetElementbyId("screenshot-image").GetAttributeValue("src", "not_found");
 
             if (imageUrl == "//st.prntscr.com/2022/02/22/0717/img/0_173a7b_211be8ff.png" || imageUrl == null) imageUrl = "not_found";
 
@@ -132,14 +135,25 @@ class Program
         {
             var image = await GetRandomImageUrl();
 
-            images += $"<img src={image}>\n";
+            images += $"<img src={image}>\n\n";
 
             Console.WriteLine($"Fetched image {i + 1}/{imageAmount}");
         }
 
-        await File.WriteAllTextAsync("random_images.html", images);
+        if (!Directory.Exists(ARCHIVE_PATH)) Directory.CreateDirectory(ARCHIVE_PATH);
 
-        return;
+        RandomBasedGenerator generator = new RandomBasedGenerator();
+        string fileName = generator.GenerateGuid().ToString();
+        string filePath= Path.Join(ARCHIVE_PATH, fileName + ".html");
+
+        await File.WriteAllTextAsync(filePath, images);
+
+        Console.WriteLine($"Created Html file: {filePath}");
+
+        // TODO: Add support for linux as well
+        Process.Start(@"cmd.exe ", @"/c " + filePath);
+
+        return; 
     }
 
     static void Main(string[] args)
@@ -152,14 +166,13 @@ class Program
             int imageAmount = Convert.ToInt32(Console.ReadLine());
 
             FetchImagesAndWrite(imageAmount).Wait();
-
-            Console.WriteLine("Successfully fetched all images!");
         }
         catch (Exception ex)
         {
+            Console.Write(ex);
             Console.WriteLine("Invalid image amount was specified! Aborted.");
         }
 
-        Console.ReadKey();
+        return;
     }
 }
