@@ -50,7 +50,12 @@ async function getRandomImageUrl() {
   if (siteData) {
     const $ = cheerio.load(siteData);
     const imgTargetLink = $("#screenshot-image").attr("src");
-    if (imgTargetLink) return imgTargetLink;
+    if (
+      imgTargetLink &&
+      imgTargetLink !==
+        "//st.prntscr.com/2022/02/22/0717/img/0_173a7b_211be8ff.png"
+    )
+      return imgTargetLink;
     else return await getRandomImageUrl();
   } else {
     return await getRandomImageUrl();
