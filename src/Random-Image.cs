@@ -99,7 +99,7 @@ class RandomImage
 
             FetchImagesAndWrite(imageAmount).Wait();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Console.WriteLine("Invalid image amount was specified! Aborted.\n");
 
